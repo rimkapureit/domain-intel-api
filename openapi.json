@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://votre-domaine-api.com/api/v1",
+      "url": "https://domain-intel-api-c9o4.onrender.com/api/v1",
       "description": "Serveur de production"
     },
     {
