@@ -1,0 +1,110 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Domain Intel API",
+    "description": "API d'enrichissement B2B pour extraire la marque, les réseaux sociaux, le statut de sécurité et les données DNS de n'importe quel nom de domaine.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://votre-domaine-api.com/api/v1",
+      "description": "Serveur de production"
+    },
+    {
+      "url": "http://localhost:3000/api/v1",
+      "description": "Environnement local"
+    }
+  ],
+  "paths": {
+    "/enrich/domain": {
+      "post": {
+        "summary": "Enrichir un nom de domaine",
+        "description": "Renvoie les métadonnées de marque, les liens sociaux, la présence d'enregistrements MX et le statut SSL.",
+        "operationId": "enrichDomain",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["domain"],
+                "properties": {
+                  "domain": {
+                    "type": "string",
+                    "example": "github.com",
+                    "description": "Le nom de domaine cible sans protocole"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Domaine enrichi avec succès",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "cached": { "type": "boolean", "example": false },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "domain": { "type": "string", "example": "github.com" },
+                        "status": { "type": "string", "example": "active" },
+                        "processedAt": { "type": "string", "format": "date-time" },
+                        "branding": {
+                          "type": "object",
+                          "properties": {
+                            "title": { "type": "string", "nullable": true },
+                            "description": { "type": "string", "nullable": true },
+                            "favicon": { "type": "string", "nullable": true },
+                            "logo": { "type": "string", "nullable": true }
+                          }
+                        },
+                        "socials": {
+                          "type": "object",
+                          "properties": {
+                            "twitter": { "type": "string", "nullable": true },
+                            "linkedin": { "type": "string", "nullable": true },
+                            "github": { "type": "string", "nullable": true },
+                            "facebook": { "type": "string", "nullable": true }
+                          }
+                        },
+                        "security": {
+                          "type": "object",
+                          "properties": {
+                            "hasMxRecords": { "type": "boolean" },
+                            "hasSsl": { "type": "boolean" }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nom de domaine invalide",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "fail",
+                  "message": "Données de requête invalides",
+                  "errors": [
+                    {
+                      "field": "domain",
+                      "message": "Format de nom de domaine invalide (ex: example.com)"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
